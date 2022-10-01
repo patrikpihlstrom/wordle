@@ -55,40 +55,45 @@ def get_guess(guessed: list, candidates: list, result: list, absent: list):
             return candidate
 
 
+def guess(word: str):
+    candidates = get_words()
+    guessed = []
+    result = (
+        [],
+        []
+    )
+    absent = []
+    while True:
+        _guess = get_guess(guessed, candidates, result, absent)
+        guessed.append(_guess)
+        if _guess.lower().strip() == word.lower().strip():
+            return guessed
+        else:
+            result = (
+                [],
+                []
+            )
+            for i in range(len(_guess)):
+                if i < len(_guess) and i < len(word):
+                    if _guess[i] == word[i]:
+                        result[0].append(i)
+                    elif _guess[i] in word:
+                        result[1].append(i)
+                    else:
+                        absent.append(_guess[i])
+
+
 def run():
     attempts = []
     try:
         while True:
             word = get_word()
             print(f'\nthe word is {word}')
-            candidates = get_words()
-            guessed = []
-            result = (
-                [],
-                []
-            )
-            absent = []
-            while True:
-                guess = get_guess(guessed, candidates, result, absent)
-                guessed.append(guess)
-                if guess.lower().strip() == word.lower().strip():
-                    print('Found the word after '+str(len(guessed))+' guesses:')
-                    print(', '.join(guessed))
-                    attempts.append(len(guessed))
-                    break
-                else:
-                    result = (
-                        [],
-                        []
-                    )
-                    for i in range(len(guess)):
-                        if i < len(guess) and i < len(word):
-                            if guess[i] == word[i]:
-                                result[0].append(i)
-                            elif guess[i] in word:
-                                result[1].append(i)
-                            else:
-                                absent.append(guess[i])
+            guessed = guess(word)
+            if guessed is not None and guessed[-1].lower().strip() == word.lower().strip():
+                print('Found the word after '+str(len(guessed))+' guesses:')
+                print(', '.join(guessed))
+                attempts.append(len(guessed))
     except KeyboardInterrupt:
         print('average number of guesses per word (sample size: '+str(len(attempts))+' words): '+str(sum(attempts)/len(attempts)))
 
